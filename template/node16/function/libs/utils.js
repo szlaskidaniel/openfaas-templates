@@ -28,7 +28,6 @@ module.exports.callFunction = async (event, functionName, method, body) => {
       headers: event.headers,
       data: body,
     });
-    console.log("Got Response !");
     return resp;
   } catch (error) {
     console.error(error);
