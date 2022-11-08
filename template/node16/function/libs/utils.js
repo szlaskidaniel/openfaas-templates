@@ -19,9 +19,11 @@ module.exports.callFunction = async (event, functionName, method, body, headers)
   console.log("callFunction");
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
 
+  const path = event?.headers?.origin ? `${functionName}.openfaas-fn.svc.cluster.local:8080` : "localhost:8080";
+
   try {
     const resp = await axios({
-      url: `${protocol}://${functionName}.openfaas-fn.svc.cluster.local:8080/function/${functionName}`,
+      url: `${protocol}://${path}/function/${functionName}`,
       method: method,
       headers: headers,
       data: body,
