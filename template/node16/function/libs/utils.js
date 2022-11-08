@@ -30,8 +30,12 @@ module.exports.callFunction = async (event, functionName, method, body) => {
     });
     return resp;
   } catch (error) {
-    console.error(error);
-    return error;
+    let errResp;
+    if (error?.response?.status) {
+      errResp = `StatusCode: ${error?.response?.status}: ${JSON.stringify(error?.response?.statusText)}`;
+    }
+    console.error(errResp ? errResp : error);
+    return;
   }
 };
 
@@ -41,11 +45,10 @@ module.exports.verifyToken = async (event) => {
   console.log(event.headers);
   try {
     const resp = await exports.callFunction(event, "validate-token", "GET", undefined, event.headers);
-    console.log("Response status", resp.status);
-    if (resp.status !== 403) return resp.data;
+    if (resp) return resp.data;
     return false;
   } catch (error) {
-    //console.error(error);
+    console.error(error);
     return false;
   }
 };
