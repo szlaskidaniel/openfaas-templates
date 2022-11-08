@@ -1,12 +1,9 @@
-'use strict'
+"use strict";
 
 module.exports = async (event, context) => {
-  const result = {
-    'body': JSON.stringify(event.body),
-    'content-type': event.headers["content-type"]
-  }
+  "use strict";
+  const responseLib = require("./libs/response-lib");
+  const utils = require("./libs/utils.js");
 
-  return context
-    .status(200)
-    .succeed(result)
-}
+  return responseLib.success(context, JSON.stringify(event.body));
+};
