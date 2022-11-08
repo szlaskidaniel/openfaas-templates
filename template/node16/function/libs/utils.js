@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const axios = require("axios");
 
-const passwordPath = process.env.IS_LOCALHOST ? "../secrets/" : "/var/openfaas/secrets/";
+const passwordPath = process.env.IS_LOCALHOST ? "../../secrets/" : "/var/openfaas/secrets/";
 
 module.exports.readSecret = async (file) => {
   console.log("try to read secret", file);

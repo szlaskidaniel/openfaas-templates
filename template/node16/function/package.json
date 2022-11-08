@@ -4,7 +4,8 @@
   "description": "OpenFaaS Function",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "local": "export IS_LOCALHOST=true && node local.js"
   },
   "keywords": [],
   "author": "OpenFaaS Ltd",
