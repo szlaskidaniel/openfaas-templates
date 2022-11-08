@@ -31,9 +31,10 @@ function buildResponse(context, statusCode, body) {
   //   body: JSON.stringify(event.body),
   //   "content-type": event.headers["content-type"],
   // };
-  context["headerValues"] = {
-    "Content-Type": "application/json",
-  };
+  if (context)
+    context["headerValues"] = {
+      "Content-Type": "application/json",
+    };
 
   return context?.status(statusCode).succeed(body);
 }
