@@ -15,7 +15,7 @@ module.exports.readSecret = async (file) => {
 };
 
 // Call OpenFaaS Function Internally
-module.exports.callFunction = async (event, functionName, method, body, headers) => {
+module.exports.callFunction = async (event, functionName, method, body) => {
   console.log("callFunction()", functionName);
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
 
@@ -25,7 +25,7 @@ module.exports.callFunction = async (event, functionName, method, body, headers)
     const resp = await axios({
       url: `${protocol}://${path}/function/${functionName}`,
       method: method,
-      headers: headers,
+      headers: event.headers,
       data: body,
     });
     console.log("Got Response !");
@@ -39,14 +39,14 @@ module.exports.callFunction = async (event, functionName, method, body, headers)
 // Validate Token Wrapper
 module.exports.verifyToken = async (event) => {
   console.log("verifyToken");
-
+  console.log(event.headers);
   try {
     const resp = await exports.callFunction(event, "validate-token", "GET", undefined, event.headers);
     console.log("Response status", resp.status);
     if (resp.status !== 403) return resp.data;
     return false;
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return false;
   }
 };
