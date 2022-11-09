@@ -79,5 +79,3 @@ module.exports.callDb = async (event, body) => {
     return;
   }
 };
-
-function dummy() {}
