@@ -61,7 +61,7 @@ function getProtocolFromOrigin(origin) {
 module.exports.callDb = async (event, body) => {
   console.log("callDb()", body);
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
-  const path = process.env.IS_LOCALHOST ? "localhost:5430" : "psql-client.database.svc.cluster.local:8080";
+  const path = process.env.IS_LOCALHOST ? "localhost:5430" : "db-client.database.svc.cluster.local:8080";
 
   try {
     const resp = await axios({
