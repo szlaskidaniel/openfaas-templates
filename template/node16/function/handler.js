@@ -10,7 +10,7 @@ module.exports = async (event, context) => {
   if (!verified) {
     return responseLib.unauthorized(context);
   }
-  console.log(verified);
+  //console.log(verified);
 
   return responseLib.success(context, JSON.stringify(event.body));
 };
