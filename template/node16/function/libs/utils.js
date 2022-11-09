@@ -15,7 +15,7 @@ module.exports.readSecret = async (file) => {
 };
 
 // Call OpenFaaS Function Internally
-module.exports.callFunction = async (event, functionName, method, body) => {
+module.exports.callFunction = async (event, functionName, method, body, headers) => {
   console.log("callFunction()", functionName);
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
 
@@ -25,27 +25,25 @@ module.exports.callFunction = async (event, functionName, method, body) => {
     const resp = await axios({
       url: `${protocol}://${path}/function/${functionName}`,
       method: method,
-      headers: event.headers,
+      headers: headers,
       data: body,
     });
+    console.log("Got Response !");
     return resp;
   } catch (error) {
-    let errResp;
-    if (error?.response?.status) {
-      errResp = `StatusCode: ${error?.response?.status}: ${JSON.stringify(error?.response?.statusText)}`;
-    }
-    console.error(errResp ? errResp : error);
-    return;
+    console.error(error);
+    return error;
   }
 };
 
 // Validate Token Wrapper
 module.exports.verifyToken = async (event) => {
   console.log("verifyToken");
-  console.log(event.headers);
+
   try {
     const resp = await exports.callFunction(event, "validate-token", "GET", undefined, event.headers);
-    if (resp) return resp.data;
+    console.log("Response status", resp.status);
+    if (resp.status !== 403) return resp.data;
     return false;
   } catch (error) {
     console.error(error);
@@ -59,3 +57,25 @@ function getProtocolFromOrigin(origin) {
   let tmp = origin.split("//")[0];
   return tmp.slice(0, -1);
 }
+
+module.exports.callDb = async (event, body) => {
+  console.log("callDb()", body);
+  const protocol = getProtocolFromOrigin(event?.headers?.origin);
+  const path = process.env.IS_LOCALHOST ? "localhost:5430" : "psql-client.database.svc.cluster.local:8080";
+
+  try {
+    const resp = await axios({
+      url: `${protocol}://${path}`,
+      method: "POST",
+      data: body,
+    });
+    return resp;
+  } catch (error) {
+    let errResp;
+    if (error?.response?.status) {
+      errResp = `StatusCode: ${error?.response?.status}: ${JSON.stringify(error?.response?.statusText)}`;
+    }
+    console.error(errResp ? errResp : error);
+    return;
+  }
+};

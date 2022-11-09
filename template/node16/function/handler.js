@@ -3,8 +3,6 @@ const utils = require("./libs/utils.js");
 const responseLib = require("./libs/response-lib");
 
 module.exports = async (event, context) => {
-  "use strict";
-
   // Token Verification
   // const verified = await utils.verifyToken(event);
   // if (!verified) {
