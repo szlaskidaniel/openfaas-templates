@@ -14,8 +14,8 @@ module.exports.readSecret = async (file) => {
   }
 };
 
-// Call OpenFaaS Function Internally
-module.exports.callFunction = async (event, functionName, method, body, headers) => {
+// Call OpenFaaS Function Internally using built-in Kube-DNS records
+module.exports.callFunction = async (event, functionName, method, body) => {
   console.log("callFunction()", functionName);
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
 
@@ -25,39 +25,21 @@ module.exports.callFunction = async (event, functionName, method, body, headers)
     const resp = await axios({
       url: `${protocol}://${path}/function/${functionName}`,
       method: method,
-      headers: headers,
+      headers: event.headers,
       data: body,
     });
-    console.log("Got Response !");
     return resp;
   } catch (error) {
-    console.error(error);
-    return error;
+    let errResp;
+    if (error?.response?.status) {
+      errResp = `StatusCode: ${error?.response?.status}: ${JSON.stringify(error?.response?.statusText)}`;
+    }
+    console.error(errResp ? errResp : error);
+    return;
   }
 };
 
-// Validate Token Wrapper
-module.exports.verifyToken = async (event) => {
-  console.log("verifyToken");
-
-  try {
-    const resp = await exports.callFunction(event, "validate-token", "GET", undefined, event.headers);
-    console.log("Response status", resp.status);
-    if (resp.status !== 403) return resp.data;
-    return false;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
-// Depends on a situation, protocol for requests can be HTTP or HTTPS, get it's value from a Hosted Func/WebPage
-function getProtocolFromOrigin(origin) {
-  if (!origin) return "http";
-  let tmp = origin.split("//")[0];
-  return tmp.slice(0, -1);
-}
-
+// Database Service shouldn't be exposed outside a Cluster. There is dedicated Container/Service handling those requests
 module.exports.callDb = async (event, body) => {
   console.log("callDb()", body);
   const protocol = getProtocolFromOrigin(event?.headers?.origin);
@@ -79,3 +61,10 @@ module.exports.callDb = async (event, body) => {
     return;
   }
 };
+
+// Depends on a situation, protocol for requests can be HTTP or HTTPS, get it's value from a Hosted Func/WebPage
+function getProtocolFromOrigin(origin) {
+  if (!origin) return "http";
+  let tmp = origin.split("//")[0];
+  return tmp.slice(0, -1);
+}
