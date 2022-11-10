@@ -15,29 +15,31 @@ module.exports = async (event, context) => {
   }
   //console.log(verified);
 
-  const { method } = event;
-
   let resp = null;
-  switch (method) {
-    case "GET":
-      resp = await handleGet(event, context);
-      break;
-    case "POST":
-      resp = await handlePost(event, context);
-      break;
-    case "PUT":
-      resp = await handlePut(event, context);
-      break;
-    case "DELETE":
-      resp = await handleDelete(event, context);
-      break;
-    case "PATCH":
-      resp = await handlePatch(event, context);
-      break;
-    default:
-      resp = lib.responseLib.generic(context, 405, "Method Not Allowed");
+  const { method } = event;
+  try {
+    switch (method) {
+      case "GET":
+        resp = await handleGet(event, context);
+        break;
+      case "POST":
+        resp = await handlePost(event, context);
+        break;
+      case "PUT":
+        resp = await handlePut(event, context);
+        break;
+      case "DELETE":
+        resp = await handleDelete(event, context);
+        break;
+      case "PATCH":
+        resp = await handlePatch(event, context);
+        break;
+      default:
+        resp = lib.responseLib.generic(context, 405, "Method Not Allowed");
+    }
+  } catch (error) {
+    resp = lib.responseLib.generic(context, 500, error.toString());
   }
-
   if (process.env.IS_LOCALHOST) console.log({ method, resp });
   return resp;
 };
