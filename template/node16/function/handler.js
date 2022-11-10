@@ -1,7 +1,7 @@
 "use strict";
 
-import lib from "openfaas-custom-libs";
-import pkg from "./package.json";
+const lib = require("openfaas-custom-libs");
+const pkg = require("./package.json");
 
 //const pkg = require("./package.json");
 
