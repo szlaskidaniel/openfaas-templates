@@ -2,8 +2,9 @@
 const handler = require("./handler");
 
 handler({
+  method: "GET",
   body: {},
   headers: {
-    authorization: "Token",
+    Authorization: "Token",
   },
 });
